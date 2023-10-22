@@ -136,7 +136,7 @@ export function LinksGroup({
   const items = (hasLinks ? links : []).map((link) => (
     <Text
       className={cx(classes.link, {
-        [classes.linkActive]: actNested === link.label,
+        [classes.linkActive]: actNested === link.label && active === label,
       })}
       key={link.label}
       onClick={(event) => {
