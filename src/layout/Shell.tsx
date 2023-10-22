@@ -1,6 +1,7 @@
 import { AppShell } from "@mantine/core";
 import { Header, Sidebar } from "./components";
 import { ReactNode, useState } from "react";
+import { NavbarNested } from "./components/NavbarNew";
 
 export const Shell = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -9,7 +10,8 @@ export const Shell = ({ children }: { children: ReactNode }) => {
     <AppShell
       padding="lg"
       fixed={false}
-      navbar={<Sidebar isOpen={isOpen} />}
+      // navbar={<Sidebar isOpen={isOpen} />} // simple route navbar
+      navbar={<NavbarNested isOpen={isOpen} setIsOpen={setIsOpen} />} // nested navbar
       header={<Header isOpen={isOpen} setIsOpen={setIsOpen} />}
       styles={(theme) => ({
         main: {
