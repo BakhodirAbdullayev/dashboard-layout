@@ -8,7 +8,7 @@ import {
 } from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
-import { useState } from "react";
+import { ForwardedRef, forwardRef, useState } from "react";
 
 interface LinksGroupProps {
   icon: React.FC<any>;
@@ -111,7 +111,7 @@ const useStyles = createStyles((theme) => ({
       color: theme.colors.blue[6],
       borderLeftColor: theme.colors.blue[6],
       borderLeftWidth: rem(4),
-      backgroundColor: theme.colors.blue[0] + "a1",
+      backgroundColor: theme.fn.lighten(theme.colors.blue[0], 0.5),
     },
   },
 
@@ -120,81 +120,86 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export function LinksGroup({
-  icon: Icon,
-  label,
-  links,
-  isOpen,
-  active,
-  setActive,
-  setIsOpen,
-}: LinksGroupProps) {
-  const { classes, cx } = useStyles();
-  const hasLinks = Array.isArray(links);
-  const [opened, { toggle, close }] = useDisclosure(false);
-  const [actNested, setActNested] = useState("");
-  const items = (hasLinks ? links : []).map((link) => (
-    <Text
-      className={cx(classes.link, {
-        [classes.linkActive]: actNested === link.label && active === label,
-      })}
-      key={link.label}
-      onClick={(event) => {
-        event.preventDefault();
-        setActNested(link.label);
-      }}
-    >
-      {link.label}
-    </Text>
-  ));
-
-  return (
-    <>
-      <UnstyledButton
-        onClick={() => {
-          setActive(label);
-          toggle();
-          if (hasLinks && !isOpen) {
-            close();
-            setIsOpen(true);
-          }
-        }}
-        className={cx(isOpen ? classes.bigMainLink : classes.mainLink, {
-          [classes.mainLinkActive]: active === label,
+export const LinksGroup = forwardRef(
+  (
+    {
+      label,
+      icon: Icon,
+      links,
+      isOpen,
+      active,
+      setActive,
+      setIsOpen,
+    }: LinksGroupProps,
+    ref: ForwardedRef<HTMLDivElement> | null
+  ) => {
+    const { classes, cx } = useStyles();
+    const hasLinks = Array.isArray(links);
+    const [opened, { toggle, close }] = useDisclosure(false);
+    const [actNested, setActNested] = useState("");
+    const items = (hasLinks ? links : []).map((link) => (
+      <Text
+        className={cx(classes.link, {
+          [classes.linkActive]: actNested === link.label && active === label,
         })}
+        key={link.label}
+        onClick={(event) => {
+          event.preventDefault();
+          setActNested(link.label);
+        }}
       >
-        <Flex w={"100%"} align={"center"} justify={"space-between"}>
-          <Flex
-            w={isOpen ? "max-content" : "100%"}
-            align={"center"}
-            gap={"sm"}
-            justify={"center"}
-          >
-            <Icon size="1.4rem" stroke={1.5} />
-            {isOpen ? <p>{label}</p> : null}
-          </Flex>
-          {hasLinks && isOpen && (
-            <IconChevronRight
-              className={classes.chevron}
-              stroke={1.5}
-              style={{
-                width: rem(16),
-                height: rem(16),
-                transform: opened ? "rotate(90deg)" : "none",
-              }}
-            />
-          )}
-        </Flex>
-      </UnstyledButton>
-      {hasLinks && isOpen ? (
-        <Collapse
-          className={classes.links}
-          in={opened}
-          transitionTimingFunction="linear"
+        {link.label}
+      </Text>
+    ));
+
+    return (
+      <div ref={ref}>
+        <UnstyledButton
+          onClick={() => {
+            setActive(label);
+            toggle();
+            if (hasLinks && !isOpen) {
+              close();
+              setIsOpen(true);
+            }
+          }}
+          className={cx(isOpen ? classes.bigMainLink : classes.mainLink, {
+            [classes.mainLinkActive]: active === label,
+          })}
         >
-          {items}
-        </Collapse>
-      ) : null}
-    </>
-  );
-}
+          <Flex w={"100%"} align={"center"} justify={"space-between"}>
+            <Flex
+              w={isOpen ? "max-content" : "100%"}
+              align={"center"}
+              gap={"sm"}
+              justify={"center"}
+            >
+              <Icon size="1.4rem" stroke={1.5} />
+              {isOpen ? <p>{label}</p> : null}
+            </Flex>
+            {hasLinks && isOpen && (
+              <IconChevronRight
+                className={classes.chevron}
+                stroke={1.5}
+                style={{
+                  width: rem(16),
+                  height: rem(16),
+                  transform: opened ? "rotate(90deg)" : "none",
+                }}
+              />
+            )}
+          </Flex>
+        </UnstyledButton>
+        {hasLinks && isOpen ? (
+          <Collapse
+            className={classes.links}
+            in={opened}
+            transitionTimingFunction="linear"
+          >
+            {items}
+          </Collapse>
+        ) : null}
+      </div>
+    );
+  }
+);

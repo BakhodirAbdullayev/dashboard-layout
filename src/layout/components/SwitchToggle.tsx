@@ -15,7 +15,13 @@ const SwitchToggle: FC = (): JSX.Element => {
     <Box style={{ cursor: "pointer" }}>
       <Switch
         checked={colorScheme === "dark"}
-        onChange={() => toggleColorScheme()}
+        onChange={() => {
+          toggleColorScheme();
+          localStorage.setItem(
+            "theme",
+            colorScheme === "light" ? "dark" : "light"
+          );
+        }}
         size="lg"
         onLabel={<IconSun color={theme.white} size="1.25rem" stroke={1.5} />}
         offLabel={
